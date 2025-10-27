@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Star, Minus, Plus, ShoppingCart, Heart } from 'lucide-react';
+import { Star, Minus, Plus, ShoppingCart, Heart, Sparkles } from 'lucide-react';
 import { useCart } from '@/contexts/CartContext';
 import { WishlistButton } from './WishlistButton';
 import { ReviewForm } from './ReviewForm';
 import { ReviewList } from './ReviewList';
 import { formatPrice, formatDate } from '@/lib/utils';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface ProductDetailClientProps {
   product: any;
@@ -18,6 +19,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const { addItem, isLoading } = useCart();
+  const router = useRouter();
 
   const avgRating = product.reviews.length > 0
     ? product.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / product.reviews.length
@@ -25,6 +27,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
   const handleAddToCart = async () => {
     await addItem(product.id, quantity);
+  };
+
+  const handleVirtualTryOn = () => {
+    router.push(`/products/${product.slug}/virtual-tryon`);
   };
 
   return (
@@ -154,20 +160,30 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           </div>
 
           {/* Actions */}
-          <div className="flex gap-4 mb-8">
+          <div className="space-y-3 mb-8">
             <button
               onClick={handleAddToCart}
               disabled={isLoading || product.stock === 0}
-              className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <ShoppingCart className="h-5 w-5" />
               {isLoading ? 'Adding...' : 'Add to Cart'}
             </button>
-            <WishlistButton 
-              productId={product.id}
-              className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
-              showLabel={false}
-            />
+            
+            <div className="flex gap-3">
+              <button
+                onClick={handleVirtualTryOn}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 flex items-center justify-center gap-2"
+              >
+                <Sparkles className="h-5 w-5" />
+                Virtual Try-On
+              </button>
+              <WishlistButton 
+                productId={product.id}
+                className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+                showLabel={false}
+              />
+            </div>
           </div>
 
           {/* Product Details */}
