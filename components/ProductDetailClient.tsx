@@ -1,0 +1,209 @@
+'use client';
+
+import { useState } from 'react';
+import Image from 'next/image';
+import { Star, Minus, Plus, ShoppingCart, Heart } from 'lucide-react';
+import { useCart } from '@/contexts/CartContext';
+import { WishlistButton } from './WishlistButton';
+import { ReviewForm } from './ReviewForm';
+import { ReviewList } from './ReviewList';
+import { formatPrice, formatDate } from '@/lib/utils';
+import Link from 'next/link';
+
+interface ProductDetailClientProps {
+  product: any;
+}
+
+export function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
+  const { addItem, isLoading } = useCart();
+
+  const avgRating = product.reviews.length > 0
+    ? product.reviews.reduce((sum: number, r: any) => sum + r.rating, 0) / product.reviews.length
+    : 0;
+
+  const handleAddToCart = async () => {
+    await addItem(product.id, quantity);
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        {/* Images Section */}
+        <div>
+          <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
+            {product.images[selectedImage] && (
+              <Image
+                src={product.images[selectedImage].url}
+                alt={product.images[selectedImage].alt || product.name}
+                fill
+                className="object-cover"
+                priority
+              />
+            )}
+          </div>
+          
+          {/* Thumbnail Gallery */}
+          {product.images.length > 1 && (
+            <div className="grid grid-cols-4 gap-4">
+              {product.images.map((image: any, index: number) => (
+                <button
+                  key={image.id}
+                  onClick={() => setSelectedImage(index)}
+                  className={`relative aspect-square rounded-lg overflow-hidden border-2 ${
+                    selectedImage === index ? 'border-purple-600' : 'border-gray-200'
+                  }`}
+                >
+                  <Image
+                    src={image.url}
+                    alt={image.alt || product.name}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Product Info Section */}
+        <div>
+          <nav className="text-sm text-gray-500 mb-4">
+            <Link href="/products" className="hover:text-purple-600">Products</Link>
+            <span className="mx-2">/</span>
+            <Link href={`/products?categoryId=${product.category.id}`} className="hover:text-purple-600">
+              {product.category.name}
+            </Link>
+          </nav>
+
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+
+          {/* Rating */}
+          <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`h-5 w-5 ${
+                    star <= avgRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            <span className="text-sm text-gray-600">
+              {avgRating.toFixed(1)} ({product.reviews.length} reviews)
+            </span>
+          </div>
+
+          {/* Price */}
+          <div className="mb-6">
+            <div className="flex items-center gap-3">
+              <span className="text-3xl font-bold text-gray-900">
+                {formatPrice(product.price)}
+              </span>
+              {product.comparePrice && (
+                <span className="text-xl text-gray-500 line-through">
+                  {formatPrice(product.comparePrice)}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {/* Stock Status */}
+          <div className="mb-6">
+            {product.stock > 0 ? (
+              <span className="text-green-600 font-medium">In Stock ({product.stock} available)</span>
+            ) : (
+              <span className="text-red-600 font-medium">Out of Stock</span>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="mb-6">
+            <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+            <p className="text-gray-600 leading-relaxed">{product.description}</p>
+          </div>
+
+          {/* Quantity Selector */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Quantity
+            </label>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center border border-gray-300 rounded-lg">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="p-2 hover:bg-gray-100"
+                  disabled={quantity <= 1}
+                >
+                  <Minus className="h-4 w-4" />
+                </button>
+                <span className="px-4 py-2 border-x border-gray-300 min-w-[60px] text-center">
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                  className="p-2 hover:bg-gray-100"
+                  disabled={quantity >= product.stock}
+                >
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-4 mb-8">
+            <button
+              onClick={handleAddToCart}
+              disabled={isLoading || product.stock === 0}
+              className="flex-1 bg-purple-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              <ShoppingCart className="h-5 w-5" />
+              {isLoading ? 'Adding...' : 'Add to Cart'}
+            </button>
+            <WishlistButton 
+              productId={product.id}
+              className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+              showLabel={false}
+            />
+          </div>
+
+          {/* Product Details */}
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="font-semibold text-gray-900 mb-4">Product Details</h3>
+            <dl className="space-y-2 text-sm">
+              {product.sku && (
+                <>
+                  <dt className="inline text-gray-600">SKU:</dt>
+                  <dd className="inline ml-2 text-gray-900">{product.sku}</dd>
+                  <br />
+                </>
+              )}
+              <dt className="inline text-gray-600">Category:</dt>
+              <dd className="inline ml-2 text-gray-900">{product.category.name}</dd>
+            </dl>
+          </div>
+        </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-16">
+        <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Review Form */}
+          <div className="lg:col-span-1">
+            <ReviewForm productId={product.id} />
+          </div>
+
+          {/* Reviews List */}
+          <div className="lg:col-span-2">
+            <ReviewList reviews={product.reviews} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
