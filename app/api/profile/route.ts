@@ -44,7 +44,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { name, email, currentPassword, newPassword } = body;
+    const { name, email, image, currentPassword, newPassword } = body;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -57,7 +57,7 @@ export async function PATCH(req: NextRequest) {
     // Build update data object
     const updateData: any = {};
     
-    if (name !== undefined) {
+    if (name !== undefined && name !== null) {
       updateData.name = name;
     }
 
@@ -72,6 +72,22 @@ export async function PATCH(req: NextRequest) {
       }
       
       updateData.email = email;
+    }
+
+    // Handle image update (base64 data URL)
+    if (image !== undefined) {
+      // Validate image if provided
+      if (image && typeof image === 'string') {
+        // Check if it's a valid data URL or external URL
+        if (image.startsWith('data:image/') || image.startsWith('http')) {
+          updateData.image = image;
+        } else {
+          return NextResponse.json({ error: 'Invalid image format' }, { status: 400 });
+        }
+      } else {
+        // If image is null/empty, clear it
+        updateData.image = null;
+      }
     }
 
     // Handle password change
@@ -101,7 +117,6 @@ export async function PATCH(req: NextRequest) {
         name: true,
         email: true,
         image: true,
-        role: true,
         updatedAt: true,
       },
     });

@@ -38,7 +38,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Images Section */}
         <div>
-          <div className="relative aspect-square bg-gray-100 rounded-lg overflow-hidden mb-4">
+          <div className="relative aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden mb-4">
             {product.images[selectedImage] && (
               <Image
                 src={product.images[selectedImage].url}
@@ -58,7 +58,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                   key={image.id}
                   onClick={() => setSelectedImage(index)}
                   className={`relative aspect-square rounded-lg overflow-hidden border-2 ${
-                    selectedImage === index ? 'border-purple-600' : 'border-gray-200'
+                    selectedImage === index ? 'border-purple-600' : 'border-gray-200 dark:border-gray-600'
                   }`}
                 >
                   <Image
@@ -75,7 +75,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
         {/* Product Info Section */}
         <div>
-          <nav className="text-sm text-gray-500 mb-4">
+          <nav className="text-sm text-gray-500 dark:text-gray-400 mb-4">
             <Link href="/products" className="hover:text-purple-600">Products</Link>
             <span className="mx-2">/</span>
             <Link href={`/products?categoryId=${product.category.id}`} className="hover:text-purple-600">
@@ -83,7 +83,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </Link>
           </nav>
 
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+          <h1 className="text-3xl font-bold text-purple-600 mb-4">{product.name}</h1>
 
           {/* Rating */}
           <div className="flex items-center gap-2 mb-4">
@@ -92,12 +92,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <Star
                   key={star}
                   className={`h-5 w-5 ${
-                    star <= avgRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                    star <= avgRating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300 dark:text-gray-600'
                   }`}
                 />
               ))}
             </div>
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-gray-600 dark:text-gray-400">
               {avgRating.toFixed(1)} ({product.reviews.length} reviews)
             </span>
           </div>
@@ -105,11 +105,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           {/* Price */}
           <div className="mb-6">
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-gray-900">
+              <span className="text-3xl font-bold text-foreground">
                 {formatPrice(product.price)}
               </span>
               {product.comparePrice && (
-                <span className="text-xl text-gray-500 line-through">
+                <span className="text-xl text-gray-500 dark:text-gray-400 line-through">
                   {formatPrice(product.comparePrice)}
                 </span>
               )}
@@ -119,38 +119,38 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           {/* Stock Status */}
           <div className="mb-6">
             {product.stock > 0 ? (
-              <span className="text-green-600 font-medium">In Stock ({product.stock} available)</span>
+              <span className="text-green-600 dark:text-green-400 font-medium">In Stock ({product.stock} available)</span>
             ) : (
-              <span className="text-red-600 font-medium">Out of Stock</span>
+              <span className="text-red-600 dark:text-red-400 font-medium">Out of Stock</span>
             )}
           </div>
 
           {/* Description */}
           <div className="mb-6">
-            <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-            <p className="text-gray-600 leading-relaxed">{product.description}</p>
+            <h3 className="font-semibold text-foreground mb-2">Description</h3>
+            <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{product.description}</p>
           </div>
 
           {/* Quantity Selector */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">
+            <label className="block text-sm font-medium text-foreground mb-2">
               Quantity
             </label>
             <div className="flex items-center gap-4">
-              <div className="flex items-center border border-gray-300 rounded-lg">
+              <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 hover:bg-gray-100"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                   disabled={quantity <= 1}
                 >
                   <Minus className="h-4 w-4" />
                 </button>
-                <span className="px-4 py-2 border-x border-gray-300 min-w-[60px] text-center">
+                <span className="px-4 py-2 border-x border-gray-300 dark:border-gray-600 min-w-[60px] text-center">
                   {quantity}
                 </span>
                 <button
                   onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-                  className="p-2 hover:bg-gray-100"
+                  className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
                   disabled={quantity >= product.stock}
                 >
                   <Plus className="h-4 w-4" />
@@ -180,25 +180,25 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </button>
               <WishlistButton 
                 productId={product.id}
-                className="p-3 border border-gray-300 rounded-lg hover:bg-gray-50"
+                className="p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
                 showLabel={false}
               />
             </div>
           </div>
 
           {/* Product Details */}
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="font-semibold text-gray-900 mb-4">Product Details</h3>
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <h3 className="font-semibold text-foreground mb-4">Product Details</h3>
             <dl className="space-y-2 text-sm">
               {product.sku && (
                 <>
-                  <dt className="inline text-gray-600">SKU:</dt>
-                  <dd className="inline ml-2 text-gray-900">{product.sku}</dd>
+                  <dt className="inline text-gray-600 dark:text-gray-400">SKU:</dt>
+                  <dd className="inline ml-2 text-foreground">{product.sku}</dd>
                   <br />
                 </>
               )}
-              <dt className="inline text-gray-600">Category:</dt>
-              <dd className="inline ml-2 text-gray-900">{product.category.name}</dd>
+              <dt className="inline text-gray-600 dark:text-gray-400">Category:</dt>
+              <dd className="inline ml-2 text-foreground">{product.category.name}</dd>
             </dl>
           </div>
         </div>
@@ -206,7 +206,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Reviews Section */}
       <div className="mt-16">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+        <h2 className="text-2xl font-bold text-foreground mb-8">Customer Reviews</h2>
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Review Form */}

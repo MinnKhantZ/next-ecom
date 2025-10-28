@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 interface Category {
   id: string;
@@ -391,6 +392,15 @@ export default function AdminCategoriesPage() {
           </div>
         </div>
       )}
+
+      <div className="mt-6">
+        <Link
+          href="/admin"
+          className="text-purple-600 hover:text-purple-700 font-medium"
+        >
+          ← Back to Dashboard
+        </Link>
+      </div>
     </div>
   );
 }

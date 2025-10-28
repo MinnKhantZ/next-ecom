@@ -2,15 +2,30 @@
 
 import Link from 'next/link';
 import { useSession, signOut } from 'next-auth/react';
-import { ShoppingCart, User, Search, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { useCart } from '@/contexts/CartContext';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export function Header() {
   const { data: session } = useSession();
   const { itemCount } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const profileDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target as Node)) {
+        setProfileDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <header className="bg-white dark:bg-gray-900 shadow-sm sticky top-0 z-50 transition-colors">
@@ -41,10 +56,6 @@ export function Header() {
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             
-            <button className="p-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100">
-              <Search className="h-5 w-5" />
-            </button>
-
             <Link href="/cart" className="p-2 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100 relative">
               <ShoppingCart className="h-5 w-5" />
               {itemCount > 0 && (
@@ -55,38 +66,49 @@ export function Header() {
             </Link>
 
             {session ? (
-              <div className="relative group">
-                <button className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+              <div className="relative" ref={profileDropdownRef}>
+                <button 
+                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                >
                   <User className="h-5 w-5" />
                 </button>
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 hidden group-hover:block">
-                  <Link
-                    href="/profile"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/orders"
-                    className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    My Orders
-                  </Link>
-                  {(session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN') && (
+                {profileDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1">
                     <Link
-                      href="/admin"
+                      href="/profile"
                       className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setProfileDropdownOpen(false)}
                     >
-                      Admin Dashboard
+                      Profile
                     </Link>
-                  )}
-                  <button
-                    onClick={() => signOut()}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Sign Out
-                  </button>
-                </div>
+                    <Link
+                      href="/orders"
+                      className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    >
+                      My Orders
+                    </Link>
+                    {(session.user.role === 'ADMIN' || session.user.role === 'SUPER_ADMIN') && (
+                      <Link
+                        href="/admin"
+                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        onClick={() => setProfileDropdownOpen(false)}
+                      >
+                        Admin Dashboard
+                      </Link>
+                    )}
+                    <button
+                      onClick={() => {
+                        signOut();
+                        setProfileDropdownOpen(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    >
+                      Sign Out
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <Link

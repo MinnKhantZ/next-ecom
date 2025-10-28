@@ -10,8 +10,8 @@ export default function AboutPage() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Hero Section */}
       <div className="text-center mb-16">
-        <h1 className="text-5xl font-bold text-gray-900 mb-6">About Us</h1>
-        <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+        <h1 className="text-5xl font-bold text-purple-600 mb-6">About Us</h1>
+        <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
           We're passionate about bringing you the latest fashion trends and timeless styles
           that make you feel confident and beautiful.
         </p>
@@ -19,9 +19,9 @@ export default function AboutPage() {
 
       {/* Our Story */}
       <section className="mb-16">
-        <div className="bg-white rounded-lg shadow-md p-8 md:p-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-          <div className="prose prose-lg max-w-none text-gray-600">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 md:p-12">
+          <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
+          <div className="prose prose-lg max-w-none text-gray-600 dark:text-gray-400">
             <p className="mb-4">
               Founded in 2024, Fashion Store began with a simple mission: to make high-quality,
               stylish fashion accessible to everyone. What started as a small boutique has grown
@@ -44,10 +44,10 @@ export default function AboutPage() {
 
       {/* Our Values */}
       <section className="mb-16">
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Our Values</h2>
+        <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Our Values</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-purple-600"
                 fill="none"
@@ -62,15 +62,15 @@ export default function AboutPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Quality First</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-semibold text-foreground mb-3">Quality First</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               We source only the finest materials and work with trusted manufacturers to ensure
               every piece meets our high standards.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-purple-600"
                 fill="none"
@@ -85,15 +85,15 @@ export default function AboutPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Sustainability</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-semibold text-foreground mb-3">Sustainability</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               We're committed to reducing our environmental impact through sustainable practices
               and eco-friendly packaging.
             </p>
           </div>
 
-          <div className="bg-white rounded-lg shadow-md p-8 text-center">
-            <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
                 className="w-8 h-8 text-purple-600"
                 fill="none"
@@ -108,8 +108,8 @@ export default function AboutPage() {
                 />
               </svg>
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-3">Customer Focus</h3>
-            <p className="text-gray-600">
+            <h3 className="text-xl font-semibold text-foreground mb-3">Customer Focus</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               Your satisfaction is our priority. We offer hassle-free returns, fast shipping,
               and dedicated customer support.
             </p>
@@ -143,8 +143,8 @@ export default function AboutPage() {
 
       {/* Team Section */}
       <section>
-        <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Meet Our Team</h2>
-        <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+        <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Meet Our Team</h2>
+        <p className="text-center text-gray-600 dark:text-gray-400 mb-12 max-w-2xl mx-auto">
           Our dedicated team of fashion experts and customer service professionals work tirelessly
           to bring you the best shopping experience possible.
         </p>
@@ -154,12 +154,12 @@ export default function AboutPage() {
             { name: 'Michael Chen', role: 'Head of Design', initials: 'MC' },
             { name: 'Emily Rodriguez', role: 'Customer Success', initials: 'ER' },
           ].map((member) => (
-            <div key={member.name} className="bg-white rounded-lg shadow-md p-8 text-center">
-              <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div key={member.name} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 text-center">
+              <div className="w-24 h-24 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span className="text-2xl font-bold text-purple-600">{member.initials}</span>
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-1">{member.name}</h3>
-              <p className="text-gray-600">{member.role}</p>
+              <h3 className="text-xl font-semibold text-foreground mb-1">{member.name}</h3>
+              <p className="text-gray-600 dark:text-gray-400">{member.role}</p>
             </div>
           ))}
         </div>

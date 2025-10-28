@@ -25,7 +25,7 @@ export function ProductSort({ currentSort, currentOrder }: ProductSortProps) {
     <select
       value={`${currentSort}-${currentOrder}`}
       onChange={(e) => handleSortChange(e.target.value)}
-      className="border border-gray-300 rounded-lg px-4 py-2 bg-white cursor-pointer focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+      className="border border-gray-300 dark:border-gray-600 rounded-lg px-4 py-2 bg-white dark:bg-gray-800 text-foreground cursor-pointer focus:ring-2 focus:ring-purple-600 focus:border-transparent"
     >
       <option value="createdAt-desc">Newest First</option>
       <option value="price-asc">Price: Low to High</option>

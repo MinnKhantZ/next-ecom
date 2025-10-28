@@ -11,11 +11,11 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center py-12 px-4">
         <div className="text-center">
           <ShoppingBag className="h-24 w-24 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Your cart is empty</h2>
-          <p className="text-gray-600 mb-6">Add some items to get started!</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">Your cart is empty</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Add some items to get started!</p>
           <Link
             href="/products"
             className="inline-block bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700"
@@ -28,9 +28,9 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+        <h1 className="text-3xl font-bold text-purple-600 mb-8">Shopping Cart</h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Cart Items */}
@@ -38,10 +38,10 @@ export default function CartPage() {
             {items.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg shadow-sm p-6 flex gap-6"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 flex gap-6"
               >
                 {/* Product Image */}
-                <div className="relative w-24 h-24 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden">
+                <div className="relative w-24 h-24 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden">
                   {item.product.images[0] && (
                     <Image
                       src={item.product.images[0].url}
@@ -58,18 +58,18 @@ export default function CartPage() {
                     <div>
                       <Link
                         href={`/products/${item.product.slug}`}
-                        className="font-semibold text-gray-900 hover:text-purple-600"
+                        className="font-semibold text-foreground hover:text-purple-600"
                       >
                         {item.product.name}
                       </Link>
-                      <p className="text-sm text-gray-500 mt-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {formatPrice(item.product.price)} each
                       </p>
                     </div>
                     <button
                       onClick={() => removeItem(item.productId)}
                       disabled={isLoading}
-                      className="text-red-600 hover:text-red-700 disabled:opacity-50"
+                      className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 disabled:opacity-50"
                     >
                       <Trash2 className="h-5 w-5" />
                     </button>
@@ -77,21 +77,21 @@ export default function CartPage() {
 
                   {/* Quantity Controls */}
                   <div className="flex items-center justify-between mt-4">
-                    <div className="flex items-center border border-gray-300 rounded-lg">
+                    <div className="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                         disabled={isLoading || item.quantity <= 1}
-                        className="p-2 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <Minus className="h-4 w-4" />
                       </button>
-                      <span className="px-4 py-2 border-x border-gray-300 min-w-[60px] text-center">
+                      <span className="px-4 py-2 border-x border-gray-300 dark:border-gray-600 min-w-[60px] text-center text-foreground">
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                         disabled={isLoading}
-                        className="p-2 hover:bg-gray-100 disabled:opacity-50"
+                        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-50"
                       >
                         <Plus className="h-4 w-4" />
                       </button>
@@ -99,7 +99,7 @@ export default function CartPage() {
 
                     {/* Item Total */}
                     <div className="text-right">
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-semibold text-foreground">
                         {formatPrice(Number(item.product.price) * item.quantity)}
                       </p>
                     </div>
@@ -111,29 +111,29 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 sticky top-6">
+              <h2 className="text-lg font-semibold text-foreground mb-4">Order Summary</h2>
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Items ({itemCount})</span>
-                  <span className="text-gray-900">{formatPrice(total)}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Items ({itemCount})</span>
+                  <span className="text-foreground">{formatPrice(total)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className="text-gray-900">
+                  <span className="text-gray-600 dark:text-gray-400">Shipping</span>
+                  <span className="text-foreground">
                     {total > 100 ? 'FREE' : formatPrice(10)}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax (10%)</span>
-                  <span className="text-gray-900">{formatPrice(total * 0.1)}</span>
+                  <span className="text-gray-600 dark:text-gray-400">Tax (10%)</span>
+                  <span className="text-foreground">{formatPrice(total * 0.1)}</span>
                 </div>
                 
-                <div className="border-t border-gray-200 pt-3">
+                <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                   <div className="flex justify-between">
-                    <span className="font-semibold text-gray-900">Total</span>
-                    <span className="font-semibold text-gray-900">
+                    <span className="font-semibold text-foreground">Total</span>
+                    <span className="font-semibold text-foreground">
                       {formatPrice(total + (total > 100 ? 0 : 10) + total * 0.1)}
                     </span>
                   </div>
@@ -141,7 +141,7 @@ export default function CartPage() {
               </div>
 
               {total < 100 && (
-                <p className="text-sm text-gray-600 mb-4 p-3 bg-blue-50 rounded-lg">
+                <p className="text-sm text-blue-800 dark:text-blue-200 mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                   Add {formatPrice(100 - total)} more for free shipping!
                 </p>
               )}

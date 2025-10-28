@@ -123,6 +123,106 @@ export async function PUT(
   }
 }
 
+export async function PATCH(
+  req: Request,
+  { params }: { params: { slug: string } }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || (session.user.role !== 'ADMIN' && session.user.role !== 'SUPER_ADMIN')) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { slug: param } = params;
+    const body = await req.json();
+
+    // Try to find product by slug first, if not found, try by ID
+    let whereClause: any = { slug: param };
+    
+    // Check if param looks like an ID (CUID format)
+    if (/^c[a-z0-9]{24}$/.test(param)) {
+      // Try finding by ID first
+      const productById = await prisma.product.findUnique({
+        where: { id: param },
+        select: { id: true, slug: true },
+      });
+      
+      if (productById) {
+        whereClause = { id: param };
+      }
+    }
+
+    // First, get the old product to know its slug
+    const oldProduct = await prisma.product.findUnique({
+      where: whereClause,
+      select: { slug: true },
+    });
+
+    if (!oldProduct) {
+      return NextResponse.json(
+        { error: 'Product not found' },
+        { status: 404 }
+      );
+    }
+
+    const updateData: any = {
+      name: body.name,
+      slug: body.slug,
+      description: body.description,
+      price: body.price,
+      comparePrice: body.comparePrice,
+      costPrice: body.costPrice,
+      sku: body.sku,
+      categoryId: body.categoryId,
+      stock: body.stock,
+      trackInventory: body.trackInventory ?? true,
+      status: body.status,
+      featured: body.featured,
+      metaTitle: body.metaTitle,
+      metaDescription: body.metaDescription,
+    };
+
+    // Handle images update if provided
+    if (body.images && Array.isArray(body.images)) {
+      updateData.images = {
+        deleteMany: {},
+        create: body.images.map((url: string, index: number) => ({
+          url,
+          position: index,
+        })),
+      };
+    }
+
+    const product = await prisma.product.update({
+      where: whereClause,
+      data: updateData,
+      include: {
+        category: true,
+        images: {
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+
+    // Invalidate cache
+    await cache.del(`product:${oldProduct.slug}`);
+    await cache.del(`product:${body.slug}`);
+    await cache.delPattern('products:*');
+
+    return NextResponse.json(product);
+  } catch (error) {
+    console.error('Update product error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update product' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(
   req: Request,
   { params }: { params: { slug: string } }

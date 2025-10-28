@@ -42,7 +42,7 @@ interface ReviewListProps {
 export function ReviewList({ reviews }: ReviewListProps) {
   if (reviews.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500 dark:text-gray-400">
         No reviews yet. Be the first to review this product!
       </div>
     );
@@ -51,7 +51,7 @@ export function ReviewList({ reviews }: ReviewListProps) {
   return (
     <div className="space-y-6">
       {reviews.map((review) => (
-        <div key={review.id} className="bg-white rounded-lg border border-gray-200 p-6">
+        <div key={review.id} className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
           <div className="flex items-start gap-4">
             {/* User Avatar */}
             <div className="flex-shrink-0">
@@ -64,8 +64,8 @@ export function ReviewList({ reviews }: ReviewListProps) {
                   className="rounded-full"
                 />
               ) : (
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <span className="text-purple-600 font-semibold text-lg">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
+                  <span className="text-purple-600 dark:text-purple-400 font-semibold text-lg">
                     {(review.user.name || 'U')[0].toUpperCase()}
                   </span>
                 </div>
@@ -76,10 +76,10 @@ export function ReviewList({ reviews }: ReviewListProps) {
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h4 className="font-semibold text-gray-900">
+                  <h4 className="font-semibold text-foreground">
                     {review.user.name || 'Anonymous'}
                   </h4>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {formatTimeAgo(review.createdAt)}
                   </p>
                 </div>
@@ -93,7 +93,7 @@ export function ReviewList({ reviews }: ReviewListProps) {
                     className={`h-4 w-4 ${
                       star <= review.rating
                         ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
+                        : 'text-gray-300 dark:text-gray-600'
                     }`}
                   />
                 ))}
@@ -101,7 +101,7 @@ export function ReviewList({ reviews }: ReviewListProps) {
 
               {/* Comment */}
               {review.comment && (
-                <p className="text-gray-700 whitespace-pre-wrap">{review.comment}</p>
+                <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{review.comment}</p>
               )}
             </div>
           </div>

@@ -46,9 +46,9 @@ export default function OrderDetailPage() {
 
   if (!order) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Order not found</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Order not found</h2>
           <Link href="/orders" className="text-purple-600 hover:text-purple-700">
             Back to Orders
           </Link>
@@ -58,18 +58,18 @@ export default function OrderDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Success Message */}
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+          <div className="bg-green-50 dark:bg-green-900 border border-green-200 dark:border-green-700 rounded-lg p-6 mb-6">
             <div className="flex items-start gap-4">
-              <CheckCircle className="h-6 w-6 text-green-600 flex-shrink-0 mt-1" />
+              <CheckCircle className="h-6 w-6 text-green-600 dark:text-green-400 flex-shrink-0 mt-1" />
               <div>
-                <h3 className="text-lg font-semibold text-green-900 mb-1">
+                <h3 className="text-lg font-semibold text-green-900 dark:text-green-100 mb-1">
                   Order Placed Successfully!
                 </h3>
-                <p className="text-green-800">
+                <p className="text-green-800 dark:text-green-200">
                   Thank you for your order. We'll send you a confirmation email shortly.
                 </p>
               </div>
@@ -78,13 +78,13 @@ export default function OrderDetailPage() {
         )}
 
         {/* Order Header */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-start justify-between mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-foreground mb-2">
                 Order #{order.orderNumber}
               </h1>
-              <p className="text-gray-600">Placed on {formatDateTime(order.createdAt)}</p>
+              <p className="text-gray-600 dark:text-gray-400">Placed on {formatDateTime(order.createdAt)}</p>
             </div>
             <span className={`px-4 py-2 rounded-full text-sm font-medium ${
               order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
@@ -117,12 +117,12 @@ export default function OrderDetailPage() {
         </div>
 
         {/* Order Items */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Items</h2>
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Order Items</h2>
           <div className="space-y-4">
             {order.items.map((item: any) => (
-              <div key={item.id} className="flex gap-4 pb-4 border-b border-gray-200 last:border-0">
-                <div className="relative w-20 h-20 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+              <div key={item.id} className="flex gap-4 pb-4 border-b border-gray-200 dark:border-gray-700 last:border-0">
+                <div className="relative w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-lg overflow-hidden flex-shrink-0">
                   {item.product.images[0] && (
                     <Image
                       src={item.product.images[0].url}
@@ -133,16 +133,16 @@ export default function OrderDetailPage() {
                   )}
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-medium text-gray-900">{item.product.name}</h3>
-                  <p className="text-sm text-gray-600 mt-1">
+                  <h3 className="font-medium text-foreground">{item.product.name}</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Quantity: {item.quantity}
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
                     Price: {formatPrice(item.price)}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-gray-900">
+                  <p className="font-semibold text-foreground">
                     {formatPrice(item.total)}
                   </p>
                 </div>
@@ -153,13 +153,13 @@ export default function OrderDetailPage() {
 
         {/* Shipping Address */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
-              <MapPin className="h-5 w-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Shipping Address</h2>
+              <MapPin className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <h2 className="text-lg font-semibold text-foreground">Shipping Address</h2>
             </div>
-            <div className="text-gray-600">
-              <p className="font-medium text-gray-900">{order.shippingAddress.fullName}</p>
+            <div className="text-gray-600 dark:text-gray-400">
+              <p className="font-medium text-foreground">{order.shippingAddress.fullName}</p>
               <p>{order.shippingAddress.phone}</p>
               <p className="mt-2">
                 {order.shippingAddress.addressLine1}
@@ -171,34 +171,34 @@ export default function OrderDetailPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <div className="flex items-center gap-2 mb-4">
-              <Package className="h-5 w-5 text-gray-600" />
-              <h2 className="text-lg font-semibold text-gray-900">Order Summary</h2>
+              <Package className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+              <h2 className="text-lg font-semibold text-foreground">Order Summary</h2>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="text-gray-900">{formatPrice(order.subtotal)}</span>
+                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="text-foreground">{formatPrice(order.subtotal)}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Shipping</span>
-                <span className="text-gray-900">
+                <span className="text-gray-600 dark:text-gray-400">Shipping</span>
+                <span className="text-foreground">
                   {Number(order.shippingCost) === 0 ? 'FREE' : formatPrice(order.shippingCost)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Tax</span>
-                <span className="text-gray-900">{formatPrice(order.tax)}</span>
+                <span className="text-gray-600 dark:text-gray-400">Tax</span>
+                <span className="text-foreground">{formatPrice(order.tax)}</span>
               </div>
-              <div className="border-t border-gray-200 pt-2 mt-2">
+              <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
                 <div className="flex justify-between">
-                  <span className="font-semibold text-gray-900">Total</span>
-                  <span className="font-semibold text-gray-900">{formatPrice(order.total)}</span>
+                  <span className="font-semibold text-foreground">Total</span>
+                  <span className="font-semibold text-foreground">{formatPrice(order.total)}</span>
                 </div>
               </div>
               <div className="pt-2">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   Payment Status: <span className={`font-medium ${
                     order.paymentStatus === 'PAID' ? 'text-green-600' : 'text-yellow-600'
                   }`}>{order.paymentStatus}</span>
