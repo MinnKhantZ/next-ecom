@@ -6,10 +6,10 @@ import { authOptions } from '@/lib/auth';
 
 export async function GET(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
-    const { slug } = params;
+    const { slug } = await params;
 
     // Try cache first
     const cacheKey = `product:${slug}`;
@@ -70,7 +70,7 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -82,7 +82,7 @@ export async function PUT(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
     const body = await req.json();
 
     const product = await prisma.product.update({
@@ -125,7 +125,7 @@ export async function PUT(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -137,7 +137,7 @@ export async function PATCH(
       );
     }
 
-    const { slug: param } = params;
+    const { slug: param } = await params;
     const body = await req.json();
 
     // Try to find product by slug first, if not found, try by ID
@@ -225,7 +225,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -237,7 +237,7 @@ export async function DELETE(
       );
     }
 
-    const { slug } = params;
+    const { slug } = await params;
 
     await prisma.product.delete({
       where: { slug },
