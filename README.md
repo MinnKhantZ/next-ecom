@@ -21,6 +21,8 @@ A modern, full-stack e-commerce platform built specifically for fashion companie
 - **User Profile**: Account management with order history and saved addresses
 - **Address Management**: Save multiple addresses with default selection
 - **Product Reviews**: Customer reviews with star ratings
+- **Virtual Try-On**: AI-powered try-on using Google Gemini (upload photo, see products on you)
+- **Wishlist**: Save favorite products for later
 - **Responsive Design**: Fully optimized for mobile, tablet, and desktop
 
 ### 🔧 Admin Features
@@ -48,6 +50,7 @@ A modern, full-stack e-commerce platform built specifically for fashion companie
 - **Database**: PostgreSQL
 - **Caching**: Redis (ioredis)
 - **Authentication**: NextAuth.js with Prisma adapter
+- **AI Integration**: Google Gemini for Virtual Try-On feature
 - **Validation**: Zod
 - **Icons**: Lucide React
 - **Build Tool**: Turbopack
@@ -101,6 +104,11 @@ NEXTAUTH_SECRET="your-secret-here"
 # Optional OAuth Providers
 GOOGLE_CLIENT_ID="your-google-client-id"
 GOOGLE_CLIENT_SECRET="your-google-client-secret"
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"
+
+# Virtual Try-On (Google Gemini AI)
+GEMINI_API_KEY="your-gemini-api-key"  # Get from https://aistudio.google.com/apikey
 ```
 
 ### 4. Database Setup
@@ -122,7 +130,18 @@ npx prisma studio
 npm run dev
 ```
 
-Visit **http://localhost:3000** 🎉
+Visit **http://localhost:5000** 🎉
+
+## Default Admin Credentials
+
+After running the database seed, you can login with these admin credentials:
+
+```
+Email: admin@fashionstore.com
+Password: admin123456
+```
+
+⚠️ **Remember to change this password in production!**
 
 ## 📁 Project Structure
 
@@ -135,12 +154,15 @@ next-ecom/
 │   │   ├── cart/         # Shopping cart
 │   │   ├── orders/       # Order management
 │   │   ├── categories/   # Category management
-│   │   └── addresses/    # Address management
+│   │   ├── addresses/    # Address management
+│   │   ├── reviews/      # Product reviews
+│   │   └── virtual-tryon/# AI virtual try-on
 │   ├── products/         # Product listing & detail pages
+│   │   └── [slug]/       # Product detail with virtual try-on
 │   ├── cart/             # Shopping cart page
 │   ├── checkout/         # Checkout flow
 │   ├── auth/             # Sign in/up pages
-│   ├── profile/          # User profile
+│   ├── profile/          # User profile & addresses
 │   ├── orders/           # Order history
 │   ├── admin/            # Admin dashboard
 │   ├── layout.tsx        # Root layout with providers
@@ -151,9 +173,12 @@ next-ecom/
 │   ├── Footer.tsx        # Site footer
 │   ├── ProductCard.tsx   # Product card component
 │   ├── ProductGrid.tsx   # Product grid layout
+│   ├── VirtualTryOnClient.tsx # AI try-on component
+│   ├── WishlistButton.tsx # Wishlist functionality
 │   └── Providers.tsx     # Context providers
 ├── contexts/             # React contexts
-│   └── CartContext.tsx   # Cart state management
+│   ├── CartContext.tsx   # Cart state management
+│   └── WishlistContext.tsx # Wishlist state management
 ├── lib/                  # Utilities and configs
 │   ├── prisma.ts        # Prisma client singleton
 │   ├── redis.ts         # Redis client & cache helpers
@@ -243,6 +268,12 @@ GET    /api/orders/[id]           // Get order details
 PATCH  /api/orders/[id]           // Update order (Admin)
 ```
 
+### Virtual Try-On Endpoints
+
+```typescript
+POST   /api/virtual-tryon         // Generate virtual try-on image (multipart/form-data)
+```
+
 ## 🎨 Styling Guidelines
 
 ### Tailwind CSS v4
@@ -285,6 +316,7 @@ Ensure these are set in your deployment platform:
 - `REDIS_URL`: Redis connection string
 - `NEXTAUTH_URL`: Your production URL
 - `NEXTAUTH_SECRET`: Production secret
+- `GEMINI_API_KEY`: Google Gemini API key (for Virtual Try-On)
 - OAuth credentials (if using)
 
 ### Database Migrations
@@ -299,20 +331,14 @@ npx prisma migrate deploy
 ### Available Scripts
 
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start development server (port 5000)
 npm run build        # Build for production
 npm start            # Start production server
-npm run lint         # Run ESLint
-```
-
-### Prisma Commands
-
-```bash
-npx prisma studio              # Open database GUI
-npx prisma generate            # Generate Prisma Client
-npx prisma migrate dev         # Create and apply migration
-npx prisma migrate reset       # Reset database
-npx prisma db seed             # Seed database
+npm run db:generate  # Generate Prisma Client
+npm run db:migrate   # Run database migrations
+npm run db:seed      # Seed database with sample data
+npm run db:studio    # Open Prisma Studio
+npm run db:reset     # Reset database
 ```
 
 ## 📊 Performance Optimizations
@@ -376,7 +402,6 @@ npm run build
 
 For help and questions:
 - Open an [Issue](https://github.com/your-repo/issues)
-- Check [Documentation](./SETUP.md)
 
 ## 🙏 Acknowledgments
 
