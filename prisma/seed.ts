@@ -1,7 +1,5 @@
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '../lib/prisma';
 import bcrypt from 'bcryptjs';
-
-const prisma = new PrismaClient();
 
 async function main() {
   console.log('🌱 Starting database seed...');
@@ -147,42 +145,68 @@ async function main() {
 
   // Create sample products
   const products = await Promise.all([
-    // Men's Clothing
+    // Classic tan male trench coat
     prisma.product.upsert({
-      where: { slug: 'classic-white-tshirt' },
+      where: { slug: 'classic-tan-trench-coat' },
       update: {},
       create: {
-        name: 'Classic White T-Shirt',
-        slug: 'classic-white-tshirt',
-        description: 'A timeless white t-shirt made from premium cotton',
-        price: 29.99,
-        comparePrice: 39.99,
-        sku: 'TS-WHT-001',
+        name: 'Classic Tan Trench Coat',
+        slug: 'classic-tan-trench-coat',
+        description: 'Timeless tan trench coat perfect for transitional weather',
+        price: 199.99,
+        comparePrice: 249.99,
+        sku: 'TC-TAN-001',
+        stock: 30,
+        categoryId: categories[12].id,
+        status: 'ACTIVE',
+        featured: true,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Classic tan male trench coat displayed on a hanger',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Folded blue cotton t-shirts
+    prisma.product.upsert({
+      where: { slug: 'folded-blue-cotton-t-shirts' },
+      update: {},
+      create: {
+        name: 'Folded Blue Cotton T-Shirts',
+        slug: 'folded-blue-cotton-t-shirts',
+        description: 'Pack of comfortable blue cotton t-shirts, neatly folded',
+        price: 39.99,
+        sku: 'TS-BLU-001',
         stock: 100,
         categoryId: categories[0].id,
         status: 'ACTIVE',
-        featured: true,
+        featured: false,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab',
-              alt: 'White T-Shirt',
+              url: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Folded blue cotton t-shirts in a minimalist stack',
               position: 0,
             },
           ],
         },
       },
     }),
+    // Close-up of blue denim jeans
     prisma.product.upsert({
-      where: { slug: 'slim-fit-jeans' },
+      where: { slug: 'blue-denim-jeans-texture' },
       update: {},
       create: {
-        name: 'Slim Fit Jeans',
-        slug: 'slim-fit-jeans',
-        description: 'Comfortable slim fit jeans perfect for everyday wear',
+        name: 'Blue Denim Jeans',
+        slug: 'blue-denim-jeans-texture',
+        description: 'Classic blue denim jeans with detailed texture and pockets',
         price: 79.99,
         comparePrice: 99.99,
-        sku: 'JN-SLM-001',
+        sku: 'JN-BLU-001',
         stock: 75,
         categoryId: categories[0].id,
         status: 'ACTIVE',
@@ -190,729 +214,565 @@ async function main() {
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1542272604-787c3835535d',
-              alt: 'Slim Fit Jeans',
+              url: 'https://images.unsplash.com/photo-1542272604-787c3835535d?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Close-up of blue denim jeans texture and pockets',
               position: 0,
             },
           ],
         },
       },
     }),
+    // Luxury white and gold fashion sneakers
     prisma.product.upsert({
-      where: { slug: 'casual-polo-shirt' },
+      where: { slug: 'luxury-white-gold-sneakers' },
       update: {},
       create: {
-        name: 'Casual Polo Shirt',
-        slug: 'casual-polo-shirt',
-        description: 'Breathable cotton polo shirt for casual occasions',
-        price: 45.99,
-        sku: 'PL-CLS-001',
-        stock: 60,
-        categoryId: categories[0].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1586790170083-2f9ceadc732d',
-              alt: 'Polo Shirt',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Women's Clothing
-    prisma.product.upsert({
-      where: { slug: 'elegant-black-dress' },
-      update: {},
-      create: {
-        name: 'Elegant Black Dress',
-        slug: 'elegant-black-dress',
-        description: 'Perfect for any occasion, this black dress is a wardrobe essential',
-        price: 89.99,
-        comparePrice: 120.00,
-        sku: 'DR-BLK-001',
-        stock: 50,
-        categoryId: categories[1].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8',
-              alt: 'Black Dress',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'floral-summer-dress' },
-      update: {},
-      create: {
-        name: 'Floral Summer Dress',
-        slug: 'floral-summer-dress',
-        description: 'Light and airy floral dress perfect for summer days',
-        price: 65.99,
-        comparePrice: 85.99,
-        sku: 'DR-FLR-001',
-        stock: 40,
-        categoryId: categories[1].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1',
-              alt: 'Floral Dress',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'high-waisted-leggings' },
-      update: {},
-      create: {
-        name: 'High-Waisted Leggings',
-        slug: 'high-waisted-leggings',
-        description: 'Comfortable and stylish leggings for active lifestyle',
-        price: 39.99,
-        sku: 'LG-HW-001',
-        stock: 80,
-        categoryId: categories[1].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1506629905607-0b5b8b5e4b8b',
-              alt: 'Leggings',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Accessories
-    prisma.product.upsert({
-      where: { slug: 'leather-messenger-bag' },
-      update: {},
-      create: {
-        name: 'Leather Messenger Bag',
-        slug: 'leather-messenger-bag',
-        description: 'Handcrafted leather messenger bag for the modern professional',
+        name: 'Luxury White and Gold Fashion Sneakers',
+        slug: 'luxury-white-gold-sneakers',
+        description: 'Premium white and gold fashion sneakers for style and comfort',
         price: 149.99,
-        sku: 'BAG-LTR-001',
-        stock: 25,
-        categoryId: categories[2].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62',
-              alt: 'Leather Bag',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'minimalist-watch' },
-      update: {},
-      create: {
-        name: 'Minimalist Watch',
-        slug: 'minimalist-watch',
-        description: 'Elegant minimalist watch with stainless steel band',
-        price: 199.99,
-        comparePrice: 249.99,
-        sku: 'WCH-MIN-001',
-        stock: 30,
-        categoryId: categories[2].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1524592094714-0f0654e20314',
-              alt: 'Minimalist Watch',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'silk-scarf' },
-      update: {},
-      create: {
-        name: 'Silk Scarf',
-        slug: 'silk-scarf',
-        description: 'Luxurious silk scarf with elegant patterns',
-        price: 79.99,
-        sku: 'SCF-SLK-001',
-        stock: 45,
-        categoryId: categories[2].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1601762603339-fd61e28b698a',
-              alt: 'Silk Scarf',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Shoes
-    prisma.product.upsert({
-      where: { slug: 'classic-white-sneakers' },
-      update: {},
-      create: {
-        name: 'Classic White Sneakers',
-        slug: 'classic-white-sneakers',
-        description: 'Timeless white sneakers that go with everything',
-        price: 89.99,
-        comparePrice: 119.99,
-        sku: 'SN-WHT-001',
-        stock: 70,
-        categoryId: categories[3].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1549298916-b41d501d3772',
-              alt: 'White Sneakers',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'black-leather-boots' },
-      update: {},
-      create: {
-        name: 'Black Leather Boots',
-        slug: 'black-leather-boots',
-        description: 'Stylish leather boots for any season',
-        price: 159.99,
-        sku: 'BT-LTR-001',
-        stock: 35,
-        categoryId: categories[3].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f',
-              alt: 'Leather Boots',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Jewelry
-    prisma.product.upsert({
-      where: { slug: 'gold-hoop-earrings' },
-      update: {},
-      create: {
-        name: 'Gold Hoop Earrings',
-        slug: 'gold-hoop-earrings',
-        description: 'Elegant gold hoop earrings that add sophistication',
-        price: 129.99,
-        comparePrice: 159.99,
-        sku: 'ER-GH-001',
-        stock: 55,
-        categoryId: categories[4].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908',
-              alt: 'Gold Hoop Earrings',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'silver-necklace' },
-      update: {},
-      create: {
-        name: 'Silver Necklace',
-        slug: 'silver-necklace',
-        description: 'Delicate silver necklace with pendant',
-        price: 89.99,
-        sku: 'NK-SLV-001',
-        stock: 40,
-        categoryId: categories[4].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446',
-              alt: 'Silver Necklace',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Hats & Caps
-    prisma.product.upsert({
-      where: { slug: 'baseball-cap' },
-      update: {},
-      create: {
-        name: 'Baseball Cap',
-        slug: 'baseball-cap',
-        description: 'Classic baseball cap with adjustable strap',
-        price: 24.99,
-        sku: 'CP-BSB-001',
-        stock: 90,
-        categoryId: categories[5].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b',
-              alt: 'Baseball Cap',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'wide-brim-hat' },
-      update: {},
-      create: {
-        name: 'Wide Brim Hat',
-        slug: 'wide-brim-hat',
-        description: 'Elegant wide brim hat perfect for sun protection',
-        price: 49.99,
-        comparePrice: 69.99,
-        sku: 'HT-WBR-001',
-        stock: 25,
-        categoryId: categories[5].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96',
-              alt: 'Wide Brim Hat',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Sportswear
-    prisma.product.upsert({
-      where: { slug: 'running-shorts' },
-      update: {},
-      create: {
-        name: 'Performance Running Shorts',
-        slug: 'running-shorts',
-        description: 'Lightweight, moisture-wicking running shorts for optimal performance',
-        price: 34.99,
-        sku: 'RS-PRF-001',
-        stock: 65,
-        categoryId: categories[6].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1506629905607-0b5b8b5e4b8b',
-              alt: 'Running Shorts',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'sports-bra' },
-      update: {},
-      create: {
-        name: 'High-Impact Sports Bra',
-        slug: 'sports-bra',
-        description: 'Supportive sports bra perfect for high-intensity workouts',
-        price: 42.99,
-        comparePrice: 55.99,
-        sku: 'SB-HI-001',
-        stock: 45,
-        categoryId: categories[6].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-              alt: 'Sports Bra',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'basketball-jersey' },
-      update: {},
-      create: {
-        name: 'Basketball Jersey',
-        slug: 'basketball-jersey',
-        description: 'Professional basketball jersey with breathable fabric',
-        price: 59.99,
-        sku: 'BJ-PRO-001',
-        stock: 30,
-        categoryId: categories[6].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1574623452334-1e0ac2b3ccb4',
-              alt: 'Basketball Jersey',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Beauty & Personal Care
-    prisma.product.upsert({
-      where: { slug: 'facial-moisturizer' },
-      update: {},
-      create: {
-        name: 'Hydrating Facial Moisturizer',
-        slug: 'facial-moisturizer',
-        description: 'Daily moisturizer that nourishes and hydrates the skin',
-        price: 28.99,
-        comparePrice: 39.99,
-        sku: 'FM-HYD-001',
-        stock: 80,
-        categoryId: categories[7].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1556228720-195a672e8a03',
-              alt: 'Facial Moisturizer',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'lipstick-set' },
-      update: {},
-      create: {
-        name: 'Matte Lipstick Set',
-        slug: 'lipstick-set',
-        description: 'Set of 5 long-lasting matte lipsticks in various shades',
-        price: 49.99,
-        sku: 'LS-MAT-001',
-        stock: 40,
-        categoryId: categories[7].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1586495777744-4413f21062fa',
-              alt: 'Lipstick Set',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'hair-serum' },
-      update: {},
-      create: {
-        name: 'Argan Oil Hair Serum',
-        slug: 'hair-serum',
-        description: 'Nourishing hair serum that tames frizz and adds shine',
-        price: 24.99,
-        sku: 'HS-ARG-001',
-        stock: 55,
-        categoryId: categories[7].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9',
-              alt: 'Hair Serum',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Kids' Clothing
-    prisma.product.upsert({
-      where: { slug: 'kids-t-shirt' },
-      update: {},
-      create: {
-        name: 'Kids Graphic T-Shirt',
-        slug: 'kids-t-shirt',
-        description: 'Fun graphic t-shirt for kids with soft, comfortable fabric',
-        price: 16.99,
-        comparePrice: 22.99,
-        sku: 'KT-GRF-001',
-        stock: 75,
-        categoryId: categories[8].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1503944168849-c1246463cd50',
-              alt: 'Kids T-Shirt',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'kids-jeans' },
-      update: {},
-      create: {
-        name: 'Kids Denim Jeans',
-        slug: 'kids-jeans',
-        description: 'Durable denim jeans perfect for active kids',
-        price: 29.99,
-        sku: 'KJ-DEN-001',
+        comparePrice: 189.99,
+        sku: 'SN-WHG-001',
         stock: 50,
-        categoryId: categories[8].id,
-        status: 'ACTIVE',
-        featured: false,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1544568100-847a948585b9',
-              alt: 'Kids Jeans',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    // Activewear
-    prisma.product.upsert({
-      where: { slug: 'yoga-pants' },
-      update: {},
-      create: {
-        name: 'High-Waisted Yoga Pants',
-        slug: 'yoga-pants',
-        description: 'Comfortable yoga pants with excellent stretch and support',
-        price: 49.99,
-        comparePrice: 64.99,
-        sku: 'YP-HW-001',
-        stock: 60,
-        categoryId: categories[9].id,
+        categoryId: categories[3].id,
         status: 'ACTIVE',
         featured: true,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1506629905607-0b5b8b5e4b8b',
-              alt: 'Yoga Pants',
+              url: 'https://images.unsplash.com/photo-1560343090-f0409e92791a?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Luxury white and gold fashion sneakers',
               position: 0,
             },
           ],
         },
       },
     }),
+    // Black leather biker jacket
     prisma.product.upsert({
-      where: { slug: 'compression-shirt' },
+      where: { slug: 'black-leather-biker-jacket' },
       update: {},
       create: {
-        name: 'Moisture-Wicking Compression Shirt',
-        slug: 'compression-shirt',
-        description: 'Technical compression shirt for intense workouts',
-        price: 39.99,
-        sku: 'CS-MWK-001',
-        stock: 45,
-        categoryId: categories[9].id,
+        name: 'Black Leather Biker Jacket',
+        slug: 'black-leather-biker-jacket',
+        description: 'Edgy black leather biker jacket with silver zippers',
+        price: 179.99,
+        sku: 'JK-BLK-001',
+        stock: 40,
+        categoryId: categories[0].id,
         status: 'ACTIVE',
         featured: false,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b',
-              alt: 'Compression Shirt',
+              url: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Black leather biker jacket with silver zippers',
               position: 0,
             },
           ],
         },
       },
     }),
-    // Swimwear
+    // White graphic sweatshirt
     prisma.product.upsert({
-      where: { slug: 'bikini-set' },
+      where: { slug: 'white-graphic-sweatshirt' },
       update: {},
       create: {
-        name: 'Floral Bikini Set',
-        slug: 'bikini-set',
-        description: 'Beautiful floral bikini perfect for beach days',
+        name: 'White Graphic Sweatshirt',
+        slug: 'white-graphic-sweatshirt',
+        description: 'White sweatshirt with minimalist mountain design',
+        price: 59.99,
+        comparePrice: 79.99,
+        sku: 'SW-WHT-001',
+        stock: 60,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=1000&auto=format&fit=crop',
+              alt: 'White graphic sweatshirt with a minimalist mountain design',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Basic white crewneck t-shirt
+    prisma.product.upsert({
+      where: { slug: 'basic-white-crewneck-t-shirt' },
+      update: {},
+      create: {
+        name: 'Basic White Crewneck T-Shirt',
+        slug: 'basic-white-crewneck-t-shirt',
+        description: 'Essential basic white crewneck t-shirt made from organic cotton',
+        price: 29.99,
+        sku: 'TS-WHT-001',
+        stock: 120,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Basic white crewneck t-shirt made from organic cotton',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Tan leather luxury handbag
+    prisma.product.upsert({
+      where: { slug: 'tan-leather-luxury-handbag' },
+      update: {},
+      create: {
+        name: 'Tan Leather Luxury Handbag',
+        slug: 'tan-leather-luxury-handbag',
+        description: 'Elegant tan leather handbag with gold hardware',
+        price: 249.99,
+        sku: 'HB-TAN-001',
+        stock: 25,
+        categoryId: categories[2].id,
+        status: 'ACTIVE',
+        featured: true,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Tan leather luxury handbag with gold hardware',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Bohemian style summer dress
+    prisma.product.upsert({
+      where: { slug: 'bohemian-summer-dress' },
+      update: {},
+      create: {
+        name: 'Bohemian Summer Dress',
+        slug: 'bohemian-summer-dress',
+        description: 'Beautiful bohemian style summer dress with floral patterns',
         price: 69.99,
         comparePrice: 89.99,
-        sku: 'BS-FLR-001',
-        stock: 35,
-        categoryId: categories[10].id,
+        sku: 'DR-BOH-001',
+        stock: 45,
+        categoryId: categories[1].id,
         status: 'ACTIVE',
-        featured: true,
+        featured: false,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1565084888279-aca607ecce0c',
-              alt: 'Bikini Set',
+              url: 'https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Bohemian style summer dress with floral patterns',
               position: 0,
             },
           ],
         },
       },
     }),
+    // Selection of men's dress shirts
     prisma.product.upsert({
-      where: { slug: 'swim-trunks' },
+      where: { slug: 'mens-dress-shirts-collection' },
       update: {},
       create: {
-        name: 'Quick-Dry Swim Trunks',
-        slug: 'swim-trunks',
-        description: 'Comfortable swim trunks with quick-dry technology',
-        price: 34.99,
-        sku: 'ST-QD-001',
+        name: 'Men\'s Dress Shirts Collection',
+        slug: 'mens-dress-shirts-collection',
+        description: 'Curated selection of premium men\'s dress shirts',
+        price: 89.99,
+        sku: 'SH-MDS-001',
+        stock: 80,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Selection of men\'s dress shirts on a wooden rack',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Matching gray tracksuit
+    prisma.product.upsert({
+      where: { slug: 'gray-tracksuit-set' },
+      update: {},
+      create: {
+        name: 'Gray Tracksuit Set',
+        slug: 'gray-tracksuit-set',
+        description: 'Comfortable matching gray tracksuit with hoodie and joggers',
+        price: 99.99,
+        comparePrice: 129.99,
+        sku: 'TS-GRY-001',
         stock: 55,
-        categoryId: categories[10].id,
+        categoryId: categories[6].id,
         status: 'ACTIVE',
         featured: false,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1471115853179-bb1d604434e0',
-              alt: 'Swim Trunks',
+              url: 'https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Matching gray tracksuit with hoodie and joggers',
               position: 0,
             },
           ],
         },
       },
     }),
-    // Formal Wear
+    // Two basic black t-shirts
     prisma.product.upsert({
-      where: { slug: 'mens-suit' },
+      where: { slug: 'basic-black-t-shirts-pack' },
       update: {},
       create: {
-        name: 'Classic Navy Suit',
-        slug: 'mens-suit',
-        description: 'Tailored navy suit perfect for business and formal occasions',
-        price: 299.99,
-        comparePrice: 399.99,
-        sku: 'MS-NAV-001',
-        stock: 20,
-        categoryId: categories[11].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d',
-              alt: 'Mens Suit',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'cocktail-dress' },
-      update: {},
-      create: {
-        name: 'Elegant Cocktail Dress',
-        slug: 'cocktail-dress',
-        description: 'Sophisticated cocktail dress for special occasions',
-        price: 149.99,
-        sku: 'CD-ELG-001',
-        stock: 25,
-        categoryId: categories[11].id,
+        name: 'Basic Black T-Shirts Pack',
+        slug: 'basic-black-t-shirts-pack',
+        description: 'Pack of two basic black t-shirts, neatly folded',
+        price: 39.99,
+        sku: 'TS-BLK-001',
+        stock: 90,
+        categoryId: categories[0].id,
         status: 'ACTIVE',
         featured: false,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8',
-              alt: 'Cocktail Dress',
+              url: 'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Two basic black t-shirts neatly folded',
               position: 0,
             },
           ],
         },
       },
     }),
-    // Winter Clothing
+    // Casual white knit sweater
     prisma.product.upsert({
-      where: { slug: 'wool-coat' },
+      where: { slug: 'casual-white-knit-sweater' },
       update: {},
       create: {
-        name: 'Wool Blend Coat',
-        slug: 'wool-coat',
-        description: 'Warm wool blend coat perfect for cold weather',
-        price: 189.99,
-        comparePrice: 249.99,
-        sku: 'WC-WBL-001',
-        stock: 30,
-        categoryId: categories[12].id,
-        status: 'ACTIVE',
-        featured: true,
-        images: {
-          create: [
-            {
-              url: 'https://images.unsplash.com/photo-1544966503-7cc5ac882d5f',
-              alt: 'Wool Coat',
-              position: 0,
-            },
-          ],
-        },
-      },
-    }),
-    prisma.product.upsert({
-      where: { slug: 'fleece-jacket' },
-      update: {},
-      create: {
-        name: 'Fleece Jacket',
-        slug: 'fleece-jacket',
-        description: 'Lightweight fleece jacket for everyday cold weather protection',
+        name: 'Casual White Knit Sweater',
+        slug: 'casual-white-knit-sweater',
+        description: 'Comfortable casual white knit sweater',
         price: 79.99,
-        sku: 'FJ-LW-001',
-        stock: 50,
-        categoryId: categories[12].id,
+        sku: 'SW-WKN-001',
+        stock: 65,
+        categoryId: categories[0].id,
         status: 'ACTIVE',
         featured: false,
         images: {
           create: [
             {
-              url: 'https://images.unsplash.com/photo-1551028719-00167b16eac5',
-              alt: 'Fleece Jacket',
+              url: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Casual white knit sweater draped over a chair',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Variety of colorful clothes
+    prisma.product.upsert({
+      where: { slug: 'colorful-clothing-collection' },
+      update: {},
+      create: {
+        name: 'Colorful Clothing Collection',
+        slug: 'colorful-clothing-collection',
+        description: 'Vibrant collection of colorful clothes for every occasion',
+        price: 149.99,
+        sku: 'CL-COL-001',
+        stock: 30,
+        categoryId: categories[2].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1516762689617-e1cffcef479d?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Variety of colorful clothes hanging on a retail rack',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // High-waisted blue denim shorts
+    prisma.product.upsert({
+      where: { slug: 'high-waisted-blue-denim-shorts' },
+      update: {},
+      create: {
+        name: 'High-Waisted Blue Denim Shorts',
+        slug: 'high-waisted-blue-denim-shorts',
+        description: 'Stylish high-waisted blue denim shorts for summer',
+        price: 49.99,
+        comparePrice: 64.99,
+        sku: 'SH-BDS-001',
+        stock: 70,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1602293589930-45aad59ba3ab?q=80&w=1000&auto=format&fit=crop',
+              alt: 'High-waisted blue denim shorts for summer',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Urban style oversized black hoodie
+    prisma.product.upsert({
+      where: { slug: 'oversized-black-hoodie' },
+      update: {},
+      create: {
+        name: 'Oversized Black Hoodie',
+        slug: 'oversized-black-hoodie',
+        description: 'Urban style oversized black hoodie for casual wear',
+        price: 69.99,
+        sku: 'HD-OBK-001',
+        stock: 55,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Urban style oversized black hoodie',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Stack of colorful woolen sweaters
+    prisma.product.upsert({
+      where: { slug: 'colorful-woolen-sweaters' },
+      update: {},
+      create: {
+        name: 'Colorful Woolen Sweaters',
+        slug: 'colorful-woolen-sweaters',
+        description: 'Stack of cozy colorful woolen sweaters',
+        price: 89.99,
+        sku: 'SW-CWL-001',
+        stock: 50,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1544441893-675973e31985?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Stack of colorful woolen sweaters',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Black cotton t-shirt
+    prisma.product.upsert({
+      where: { slug: 'black-cotton-t-shirt' },
+      update: {},
+      create: {
+        name: 'Black Cotton T-Shirt',
+        slug: 'black-cotton-t-shirt',
+        description: 'Simple black cotton t-shirt on a dark background',
+        price: 29.99,
+        sku: 'TS-BCT-001',
+        stock: 100,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Black cotton t-shirt on a dark background',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Collection of men's folded t-shirts
+    prisma.product.upsert({
+      where: { slug: 'mens-folded-t-shirts-collection' },
+      update: {},
+      create: {
+        name: 'Men\'s Folded T-Shirts Collection',
+        slug: 'mens-folded-t-shirts-collection',
+        description: 'Collection of men\'s folded t-shirts in earth tones',
+        price: 59.99,
+        sku: 'TS-MFT-001',
+        stock: 75,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Collection of men\'s folded t-shirts in earth tones',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Graphic t-shirt with urban street art
+    prisma.product.upsert({
+      where: { slug: 'urban-street-art-t-shirt' },
+      update: {},
+      create: {
+        name: 'Urban Street Art T-Shirt',
+        slug: 'urban-street-art-t-shirt',
+        description: 'Graphic t-shirt featuring urban street art design',
+        price: 39.99,
+        sku: 'TS-USA-001',
+        stock: 80,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Graphic t-shirt with urban street art design',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Colorful patterned women's sandals
+    prisma.product.upsert({
+      where: { slug: 'colorful-patterned-sandals' },
+      update: {},
+      create: {
+        name: 'Colorful Patterned Sandals',
+        slug: 'colorful-patterned-sandals',
+        description: 'Vibrant colorful patterned women\'s sandals',
+        price: 49.99,
+        sku: 'SD-CPS-001',
+        stock: 60,
+        categoryId: categories[3].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Colorful patterned women\'s sandals',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Close-up of white designer running shoes
+    prisma.product.upsert({
+      where: { slug: 'white-designer-running-shoes' },
+      update: {},
+      create: {
+        name: 'White Designer Running Shoes',
+        slug: 'white-designer-running-shoes',
+        description: 'Premium white designer running shoes for performance',
+        price: 159.99,
+        sku: 'SH-WDR-001',
+        stock: 40,
+        categoryId: categories[3].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Close-up of white designer running shoes',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // White button-up shirt
+    prisma.product.upsert({
+      where: { slug: 'white-button-up-shirt' },
+      update: {},
+      create: {
+        name: 'White Button-Up Shirt',
+        slug: 'white-button-up-shirt',
+        description: 'Classic white button-up shirt made from premium linen',
+        price: 59.99,
+        comparePrice: 79.99,
+        sku: 'SH-WBU-001',
+        stock: 85,
+        categoryId: categories[0].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1000&auto=format&fit=crop',
+              alt: 'White button-up shirt made from premium linen',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // Red evening gown
+    prisma.product.upsert({
+      where: { slug: 'red-evening-gown' },
+      update: {},
+      create: {
+        name: 'Red Evening Gown',
+        slug: 'red-evening-gown',
+        description: 'Elegant red evening gown for formal occasions',
+        price: 199.99,
+        sku: 'GN-RED-001',
+        stock: 20,
+        categoryId: categories[1].id,
+        status: 'ACTIVE',
+        featured: true,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1578587018452-892bacefd3f2?q=80&w=1000&auto=format&fit=crop',
+              alt: 'Red evening gown for formal occasions',
+              position: 0,
+            },
+          ],
+        },
+      },
+    }),
+    // White high-top canvas sneakers
+    prisma.product.upsert({
+      where: { slug: 'white-high-top-canvas-sneakers' },
+      update: {},
+      create: {
+        name: 'White High-Top Canvas Sneakers',
+        slug: 'white-high-top-canvas-sneakers',
+        description: 'Classic white high-top canvas sneakers',
+        price: 79.99,
+        comparePrice: 99.99,
+        sku: 'SN-WHT-001',
+        stock: 65,
+        categoryId: categories[3].id,
+        status: 'ACTIVE',
+        featured: false,
+        images: {
+          create: [
+            {
+              url: 'https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?q=80&w=1000&auto=format&fit=crop',
+              alt: 'White high-top canvas sneakers on a wooden floor',
               position: 0,
             },
           ],

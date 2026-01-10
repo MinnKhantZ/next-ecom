@@ -4,9 +4,9 @@ import { VirtualTryOnClient } from '@/components/VirtualTryOnClient';
 import type { Metadata } from 'next';
 
 interface VirtualTryOnPageProps {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 async function getProduct(slug: string) {
@@ -24,7 +24,8 @@ async function getProduct(slug: string) {
 }
 
 export async function generateMetadata({ params }: VirtualTryOnPageProps): Promise<Metadata> {
-  const product = await getProduct(params.slug);
+  const { slug } = await params;
+  const product = await getProduct(slug);
   
   if (!product) {
     return {
@@ -39,7 +40,8 @@ export async function generateMetadata({ params }: VirtualTryOnPageProps): Promi
 }
 
 export default async function VirtualTryOnPage({ params }: VirtualTryOnPageProps) {
-  const product = await getProduct(params.slug);
+  const { slug } = await params;
+  const product = await getProduct(slug);
 
   if (!product) {
     notFound();
