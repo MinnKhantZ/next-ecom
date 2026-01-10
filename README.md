@@ -21,7 +21,7 @@ A modern, full-stack e-commerce platform built specifically for fashion companie
 - **User Profile**: Account management with order history and saved addresses
 - **Address Management**: Save multiple addresses with default selection
 - **Product Reviews**: Customer reviews with star ratings
-- **Virtual Try-On**: AI-powered try-on using Google Gemini (upload photo, see products on you)
+- **Virtual Try-On**: AI-powered try-on using OpenAI image model (upload photo, see products on you)
 - **Wishlist**: Save favorite products for later
 - **Responsive Design**: Fully optimized for mobile, tablet, and desktop
 
@@ -50,7 +50,7 @@ A modern, full-stack e-commerce platform built specifically for fashion companie
 - **Database**: PostgreSQL
 - **Caching**: Redis (ioredis)
 - **Authentication**: NextAuth.js with Prisma adapter
-- **AI Integration**: Google Gemini for Virtual Try-On feature
+- **AI Integration**: OpenAI image model for Virtual Try-On feature
 - **Validation**: Zod
 - **Icons**: Lucide React
 - **Build Tool**: Turbopack
@@ -107,8 +107,9 @@ GOOGLE_CLIENT_SECRET="your-google-client-secret"
 GITHUB_CLIENT_ID="your-github-client-id"
 GITHUB_CLIENT_SECRET="your-github-client-secret"
 
-# Virtual Try-On (Google Gemini AI)
-GEMINI_API_KEY="your-gemini-api-key"  # Get from https://aistudio.google.com/apikey
+# Virtual Try-On (OpenAI)
+OPENAI_API_KEY="your-openai-api-key"
+OPENAI_IMAGE_MODEL="gpt-image-1"  # Optional override
 ```
 
 ### 4. Database Setup
@@ -316,7 +317,7 @@ Ensure these are set in your deployment platform:
 - `REDIS_URL`: Redis connection string
 - `NEXTAUTH_URL`: Your production URL
 - `NEXTAUTH_SECRET`: Production secret
-- `GEMINI_API_KEY`: Google Gemini API key (for Virtual Try-On)
+- `OPENAI_API_KEY`: OpenAI API key (for Virtual Try-On)
 - OAuth credentials (if using)
 
 ### Database Migrations

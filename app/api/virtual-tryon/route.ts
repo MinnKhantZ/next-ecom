@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// Initialize Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '');
+export const runtime = 'nodejs';
+
+const OPENAI_IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1.5';
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const userImage = formData.get('userImage') as File;
-    const productName = formData.get('productName') as string;
-    const productCategory = formData.get('productCategory') as string;
-    const productDescription = formData.get('productDescription') as string;
+    const productImage = formData.get('productImage') as File;
 
     if (!userImage) {
       return NextResponse.json(
@@ -19,64 +17,61 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!process.env.GEMINI_API_KEY) {
+    if (!productImage) {
       return NextResponse.json(
-        { error: 'Gemini API key is not configured' },
+        { error: 'Product image is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!process.env.OPENAI_API_KEY) {
+      return NextResponse.json(
+        { error: 'OpenAI API key is not configured' },
         { status: 500 }
       );
     }
 
-    // Convert image to base64
-    const arrayBuffer = await userImage.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const base64Image = buffer.toString('base64');
+    const prompt =
+      'You are a professional fashion photo editor.\n' +
+      'Use IMAGE 1 as the base photo of the person, preserving identity, face, body proportions, pose, and background.\n' +
+      'Use IMAGE 2 as the reference for the clothing/product to apply onto the person.\n\n' +
+      'Task: Create a photorealistic result where the person in IMAGE 1 is wearing/using the item from IMAGE 2.\n\n' +
+      'Requirements:\n' +
+      '- Keep the same person and same scene from IMAGE 1 (no background changes).\n' +
+      '- Apply the product from IMAGE 2 with realistic fit, scale, folds, texture, and material.\n' +
+      '- Match lighting, shadows, and perspective from IMAGE 1.\n' +
+      '- Do not add extra accessories, text, logos, or watermarks.\n' +
+      '- Output should look like a natural photo.';
 
-    // Get the model - using gemini-2.0-flash-exp for image generation
-    // Note: Update to 'gemini-2.5-flash-image' when available in your region
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-image' });
+    const apiBody = new FormData();
+    apiBody.append('model', OPENAI_IMAGE_MODEL);
+    apiBody.append('prompt', prompt);
+    apiBody.append('size', '1024x1024');
+    apiBody.append('quality', 'low');
+    apiBody.append('output_format', 'png');
+    apiBody.append('n', '1');
+    // Multiple reference images are supported by GPT Image models via image[]
+    apiBody.append('image[]', userImage, userImage.name || 'user-image');
+    apiBody.append('image[]', productImage, productImage.name || 'product-image');
 
-    // Create the prompt for virtual try-on
-    const prompt = `Create a photorealistic image showing the person in the provided photo wearing or using ${productName}. 
-
-Product Details:
-- Category: ${productCategory}
-- Description: ${productDescription}
-
-Instructions:
-- Preserve the person's facial features, body proportions, and pose exactly as they appear in the original photo
-- Realistically add the ${productName} to the person in a natural way
-- Match the lighting, shadows, and perspective of the original photo
-- Ensure the product looks natural and properly fitted/positioned on the person
-- Maintain the original background and environment
-- The final image should look like a professional product photography shot
-- High resolution and photorealistic quality`;
-
-    // Prepare the image part
-    const imagePart = {
-      inlineData: {
-        data: base64Image,
-        mimeType: userImage.type,
+    const openaiResponse = await fetch('https://api.openai.com/v1/images/edits', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
       },
-    };
+      body: apiBody,
+    });
 
-    // Generate the image with virtual try-on
-    const result = await model.generateContent([prompt, imagePart]);
-    const response = await result.response;
-    
-    // Extract the generated image from the response
-    const parts = response.candidates?.[0]?.content?.parts || [];
-    
-    let generatedImageBase64 = null;
-    let generatedText = null;
+    const result = await openaiResponse.json().catch(() => null);
 
-    for (const part of parts) {
-      if ('inlineData' in part && part.inlineData) {
-        generatedImageBase64 = part.inlineData.data;
-      }
-      if ('text' in part && part.text) {
-        generatedText = part.text;
-      }
+    if (!openaiResponse.ok) {
+      const message = result?.error?.message || 'OpenAI image request failed';
+      return NextResponse.json({ error: message }, { status: openaiResponse.status });
     }
+
+    const generatedImageBase64: string | null = result?.data?.[0]?.b64_json ?? null;
+    const outputFormat: string = result?.output_format || 'png';
+    const generatedMimeType = outputFormat === 'jpg' ? 'image/jpeg' : `image/${outputFormat}`;
 
     if (!generatedImageBase64) {
       return NextResponse.json(
@@ -87,8 +82,8 @@ Instructions:
 
     return NextResponse.json({
       success: true,
-      image: `data:image/png;base64,${generatedImageBase64}`,
-      text: generatedText,
+      image: `data:${generatedMimeType};base64,${generatedImageBase64}`,
+      model: OPENAI_IMAGE_MODEL,
     });
 
   } catch (error) {

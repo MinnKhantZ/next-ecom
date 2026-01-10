@@ -61,6 +61,11 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
       return;
     }
 
+    if (!product.images?.[0]?.url) {
+      setError('This product does not have an image for try-on');
+      return;
+    }
+
     setIsGenerating(true);
     setError(null);
     setGeneratedImage(null);
@@ -68,9 +73,19 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
     try {
       const formData = new FormData();
       formData.append('userImage', userImage);
-      formData.append('productName', product.name);
-      formData.append('productCategory', product.category.name);
-      formData.append('productDescription', product.description);
+
+      // Fetch product image and attach as second input image
+      const productImageResponse = await fetch(product.images[0].url);
+      if (!productImageResponse.ok) {
+        throw new Error('Failed to load product image for try-on');
+      }
+      const productImageBlob = await productImageResponse.blob();
+      const productImageFile = new File(
+        [productImageBlob],
+        `product-${product.slug || product.id}.png`,
+        { type: productImageBlob.type || 'image/png' }
+      );
+      formData.append('productImage', productImageFile);
 
       const response = await fetch('/api/virtual-tryon', {
         method: 'POST',
