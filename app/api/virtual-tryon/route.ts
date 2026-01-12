@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { redis } from '@/lib/redis';
 
 export const runtime = 'nodejs';
 
@@ -6,6 +7,40 @@ const OPENAI_IMAGE_MODEL = process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1.5';
 
 export async function POST(request: NextRequest) {
   try {
+    const WINDOW_SECONDS = 60 * 60; // 1 hour
+    const MAX_GENERATIONS = 2; // allowed images per window (global)
+    const REDIS_KEY = 'virtual-tryon:count';
+
+    // Claim a slot (atomic with Redis). If Redis unavailable, use in-memory global fallback.
+    let claimed = false;
+    if (redis) {
+      const count = await redis.incr(REDIS_KEY);
+      if (count === 1) {
+        await redis.expire(REDIS_KEY, WINDOW_SECONDS);
+      }
+      if (count > MAX_GENERATIONS) {
+        // Over the limit — decrement our increment immediately and return 429
+        await redis.decr(REDIS_KEY);
+        const ttl = await redis.ttl(REDIS_KEY);
+        return NextResponse.json({ error: 'Rate limit exceeded. Try again later.', retry_after: ttl }, { status: 429 });
+      }
+      claimed = true;
+    } else {
+      const g = globalThis as any;
+      if (!g.__virtualTryon) g.__virtualTryon = { start: Date.now(), count: 0 };
+      const now = Date.now();
+      if (now - g.__virtualTryon.start > WINDOW_SECONDS * 1000) {
+        g.__virtualTryon = { start: now, count: 0 };
+      }
+      g.__virtualTryon.count += 1;
+      if (g.__virtualTryon.count > MAX_GENERATIONS) {
+        g.__virtualTryon.count -= 1;
+        const retry_after = Math.ceil((g.__virtualTryon.start + WINDOW_SECONDS * 1000 - now) / 1000);
+        return NextResponse.json({ error: 'Rate limit exceeded. Try again later.', retry_after }, { status: 429 });
+      }
+      claimed = true;
+    }
+
     const formData = await request.formData();
     const userImage = formData.get('userImage') as File;
     const productImage = formData.get('productImage') as File;
@@ -74,6 +109,15 @@ export async function POST(request: NextRequest) {
     const generatedMimeType = outputFormat === 'jpg' ? 'image/jpeg' : `image/${outputFormat}`;
 
     if (!generatedImageBase64) {
+      // Release claimed slot since generation failed
+      if (claimed) {
+        if (redis) {
+          try { await redis.decr(REDIS_KEY); } catch (e) { /* ignore */ }
+        } else {
+          const g = globalThis as any;
+          if (g.__virtualTryon && g.__virtualTryon.count > 0) g.__virtualTryon.count -= 1;
+        }
+      }
       return NextResponse.json(
         { error: 'Failed to generate try-on image. The model did not return an image.' },
         { status: 500 }

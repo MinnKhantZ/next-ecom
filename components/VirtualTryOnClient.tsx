@@ -251,7 +251,7 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
             <button
               onClick={handleGenerateTryOn}
               disabled={!userImage || isGenerating}
-              className="w-full py-4 px-6 bg-primary text-primary-foreground rounded-lg font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+              className="w-full py-4 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold text-lg disabled:opacity-50 disabled:cursor-not-allowed hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2"
             >
               {isGenerating ? (
                 <>
