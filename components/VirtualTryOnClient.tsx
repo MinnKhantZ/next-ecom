@@ -28,6 +28,51 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const resizeImage = (file: File, maxWidth = 1024, maxHeight = 1024): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (event) => {
+        const img = new (window as any).Image();
+        img.src = event.target?.result as string;
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > maxWidth) {
+              height *= maxWidth / width;
+              width = maxWidth;
+            }
+          } else {
+            if (height > maxHeight) {
+              width *= maxHeight / height;
+              height = maxHeight;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx?.drawImage(img, 0, 0, width, height);
+          canvas.toBlob(
+            (blob) => {
+              if (blob) {
+                resolve(blob);
+              } else {
+                reject(new Error('Failed to compress image'));
+              }
+            },
+            'image/png'
+          );
+        };
+        img.onerror = () => reject(new Error('Failed to load image for resizing'));
+      };
+      reader.onerror = () => reject(new Error('Failed to read image file'));
+    });
+  };
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -37,9 +82,9 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
         return;
       }
 
-      // Validate file size (max 10MB)
-      if (file.size > 10 * 1024 * 1024) {
-        setError('Image size must be less than 10MB');
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setError('Image size must be less than 5MB');
         return;
       }
 
@@ -72,7 +117,11 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
 
     try {
       const formData = new FormData();
-      formData.append('userImage', userImage);
+      
+      // Resize user image to reduce payload size and avoid 413 errors
+      const resizedUserBlob = await resizeImage(userImage);
+      const userImageFile = new File([resizedUserBlob], 'user-photo.png', { type: 'image/png' });
+      formData.append('userImage', userImageFile);
 
       // Fetch product image and attach as second input image
       const productImageResponse = await fetch(product.images[0].url);
@@ -80,10 +129,14 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
         throw new Error('Failed to load product image for try-on');
       }
       const productImageBlob = await productImageResponse.blob();
+      
+      // Also resize product image if it's potentially huge
+      const productImageFileFromBlob = new File([productImageBlob], 'product.png', { type: productImageBlob.type });
+      const resizedProductBlob = await resizeImage(productImageFileFromBlob);
       const productImageFile = new File(
-        [productImageBlob],
+        [resizedProductBlob],
         `product-${product.slug || product.id}.png`,
-        { type: productImageBlob.type || 'image/png' }
+        { type: 'image/png' }
       );
       formData.append('productImage', productImageFile);
 
@@ -92,11 +145,22 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
         body: formData,
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate try-on image');
+        // Handle non-JSON responses (like 413 error pages)
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const data = await response.json();
+          throw new Error(data.error || `Server error: ${response.status}`);
+        } else {
+          const text = await response.text();
+          if (response.status === 413) {
+            throw new Error('The image file is too large for the server. Try a smaller photo.');
+          }
+          throw new Error(`Server error (${response.status}): ${text.slice(0, 100)}...`);
+        }
       }
+
+      const data = await response.json();
 
       if (data.success && data.image) {
         setGeneratedImage(data.image);
@@ -213,7 +277,7 @@ export function VirtualTryOnClient({ product }: VirtualTryOnPageProps) {
                       <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                       <p className="text-lg font-medium mb-2">Click to upload your photo</p>
                       <p className="text-sm text-muted-foreground">
-                        PNG, JPG up to 10MB
+                        PNG, JPG up to 5MB
                       </p>
                     </div>
                   )}
